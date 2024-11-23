@@ -50,10 +50,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 650,
+        "height": 550,
         "resizable": false,
-        "title": "carbon",
-        "width": 950,
+        "title": "Carbon",
+        "width": 850,
         "decorations": false,
         "transparent": true
       }

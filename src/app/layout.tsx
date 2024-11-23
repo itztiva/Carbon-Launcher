@@ -55,7 +55,7 @@ export default function RootLayout({
           }
         `}</style>
       </head>
-      <body className={`${ok.className} bg-fixed bg-[#090C10]`} suppressHydrationWarning>
+      <body className={`${ok.className} bg-fixed bg-[#16171b]`} suppressHydrationWarning>
         <Providers>
           <Window />
           {children}

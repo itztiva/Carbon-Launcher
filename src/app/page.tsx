@@ -1,101 +1,94 @@
-import Image from "next/image";
+'use client'
+
+import { useEffect } from 'react'
+import Image from 'next/image'
+import Frame from '@/components/core/Sidebar'
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  useEffect(() => {
+    const setRPC = async () => {
+      try {
+        const { invoke } = await import("@tauri-apps/api/core")
+        await invoke('rich_presence')
+      } catch (error) {
+        console.error('Failed to set rpc:', error)
+      }
+    }
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    setRPC()
+  }, [])
+
+  return (
+    <div className="flex h-screen">
+      <Frame page={{ page: 'Home' }} />
+      <main className="flex-grow p-4 text-white">
+        <h1 className="text-2xl font-bold mt-6 ml-1 mb-4">Home</h1>
+        <div className="space-y-4">
+          <div className="bg-[#2b2b2b] rounded-lg p-4">
+            <h2 className="text-lg font-semibold mb-2">Welcome to Carbon!</h2>
+            <p className="text-sm text-gray-300 mb-3">
+              Welcome to Carbon! Make sure to join our Discord Server for important news
+              and frequent updates! If you have any requests or encounter an issue, please let us know there.
+            </p>
+            <div className="space-y-2">
+              <button
+                className="w-full bg-gradient-to-r from-[#454FBF] to-[#3FA9F5] hover:brightness-110 text-white font-bold py-3 px-4 rounded text-sm flex items-center justify-center transition-all duration-200 relative overflow-hidden"
+                style={{
+                  boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.2)'
+                }}
+              >
+                <span className="flex-grow text-center">Launch Fortnite</span>
+                <div
+                  className="absolute right-0 top-1/2 w-16 h-16 opacity-25"
+                  style={{
+                    background: 'url(/battlebus.PNG) no-repeat center center',
+                    backgroundSize: 'contain',
+                    transform: 'translateY(-50%) translateX(25%) rotate(15deg)'
+                  }}
+                />
+              </button>
+              <button
+                className="w-full bg-gradient-to-r from-[#454FBF] to-[#6B77E5] hover:brightness-110 text-white font-bold py-3 px-4 rounded text-sm flex items-center justify-center transition-all duration-200 relative overflow-hidden"
+                style={{
+                  boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.2)'
+                }}
+              >
+                <span className="flex-grow text-center relative z-10">Join our Discord</span>
+                <div
+                  className="absolute right-0 top-1/2 w-16 h-16 opacity-25"
+                  style={{
+                    background: 'url(/disc2.png) no-repeat center center',
+                    backgroundSize: 'contain',
+                    transform: 'translateY(-50%) translateX(25%) rotate(15deg)'
+                  }}
+                />
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-[#2b2b2b] rounded-lg p-4">
+            <div className="flex">
+              <div className="flex-grow pr-3">
+                <h3 className="text-base font-semibold mb-1">
+                  Introducing: <span className="text-[#d580ff]">Carbon Launcher</span>
+                </h3>
+                <p className="text-sm text-gray-300 mb-1">
+                  You spoke, and we listened. Were you one of the thousands tired of the annoying
+                  console app? Well lucky enough for you, Cranium is easier than ever to use with
+                  the new Carbon Launcher. More updates coming shortly, but until then enjoy!
+                </p>
+                <p className="text-xs text-gray-400 italic">
+                  With love, the Carbon team ❤️
+                </p>
+              </div>
+              <div className="flex-shrink-0">
+                <Image src="/fist.jpg" alt="Feature Image" width={130} height={130} className="rounded-lg" />
+              </div>
+            </div>
+          </div>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
-  );
+  )
 }
+

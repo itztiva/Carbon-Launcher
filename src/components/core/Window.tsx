@@ -8,6 +8,7 @@ export default function WindowBar() {
         try {
             const appWindow = new Window("main");
             const { invoke }  = await import("@tauri-apps/api/core");
+            await invoke("exit_all")
             await appWindow.close();
         } catch (error) {
             console.error("failed to close:", error);
