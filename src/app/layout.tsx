@@ -1,17 +1,10 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
+import Providers from "@/components/Provider";
+import Window from "@/components/core/Window";
+import { Montserrat } from 'next/font/google';
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+const ok = Montserrat({ subsets: ["latin"], weight: "600" });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -24,11 +17,49 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+    <html lang="en" className="dark">
+      <head>
+        <style>{`
+          * {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+          }
+
+          .selectable {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+          }
+
+          input, textarea {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+          }
+
+          ::-webkit-scrollbar {
+            display: none;
+          }
+
+          html {
+            -ms-overflow-style: none;  
+            scrollbar-width: none;  
+          }
+
+          body {
+            overflow-y: scroll;
+          }
+        `}</style>
+      </head>
+      <body className={`${ok.className} bg-fixed bg-[#090C10]`} suppressHydrationWarning>
+        <Providers>
+          <Window />
+          {children}
+        </Providers>
       </body>
     </html>
   );
