@@ -24,7 +24,7 @@ export default function Home() {
       <main className="flex-grow p-4 text-white">
         <h1 className="text-2xl font-bold mt-6 ml-1 mb-4">Home</h1>
         <div className="space-y-4">
-          <div className="bg-[#2b2b2b] rounded-lg p-4">
+          <div className="bg-[#1F2025] rounded-lg p-4">
             <h2 className="text-lg font-semibold mb-2">Welcome to Carbon!</h2>
             <p className="text-sm text-gray-300 mb-3">
               Welcome to Carbon! Make sure to join our Discord Server for important news
@@ -66,7 +66,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="bg-[#2b2b2b] rounded-lg p-4">
+          <div className="bg-[#1F2025] rounded-lg p-4">
             <div className="flex">
               <div className="flex-grow pr-3">
                 <h3 className="text-base font-semibold mb-1">
@@ -85,6 +85,14 @@ export default function Home() {
                 <Image src="/fist.jpg" alt="Feature Image" width={130} height={130} className="rounded-lg" />
               </div>
             </div>
+          </div>
+          <br></br>
+          <br></br>
+          <br></br>
+          <div className="flex justify-center">
+            <p className="text-xs text-gray-400 bold">
+            Launcher made with ❤️ by Itztiva, UI made by t8do
+            </p>
           </div>
         </div>
       </main>

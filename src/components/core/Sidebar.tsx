@@ -32,7 +32,7 @@ export default function Frame({ page }: { page: { page: string } }) {
             <aside className="w-16 md:w-16 sm:w-14 bg-[#16171b] p-4 h-screen flex flex-col border-r border-gray-700">
                     <nav className="flex-grow flex flex-col items-center space-y-4">
                     <div className="w-14 mb-2 mt-2 flex justify-start relative">
-                        <div className="absolute inset-0 bg-white opacity-75 blur-md rounded-full animate-pulse"></div>
+                        <div className="absolute inset-0 bg-white opacity-25 blur-lg rounded-full animate-pulse"></div>
                         <Image
                             src="/icon.png"
                             alt="Carbon Icon"
