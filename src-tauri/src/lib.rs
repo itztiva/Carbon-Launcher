@@ -1,10 +1,10 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-use std::os::windows::process::CommandExt;
-use std::process::Command;
-use sysinfo::{ System, SystemExt };
 use declarative_discord_rich_presence::activity::{ Activity, Button, Timestamps };
 use declarative_discord_rich_presence::DeclarativeDiscordIpcClient;
 use std::fmt::{ Display, Formatter };
+use std::os::windows::process::CommandExt;
+use std::process::Command;
+use sysinfo::{ System, SystemExt };
 
 #[derive(Debug)]
 enum RichPresenceError {
@@ -52,6 +52,34 @@ fn rich_presence() {
 }
 
 #[tauri::command]
+async fn check_file_exists(path: &str, size: Option<u64>) -> Result<bool, String> {
+    let file_path = std::path::PathBuf::from(path);
+
+    if !file_path.exists() {
+        return Ok(false);
+    }
+
+    let _file_size = match size {
+        Some(expected_size) => {
+            let actual_size = match file_path.metadata() {
+                Ok(metadata) => metadata.len(),
+                Err(err) => {
+                    return Err(err.to_string());
+                }
+            };
+            if actual_size == expected_size {
+                Some(actual_size)
+            } else {
+                None
+            }
+        }
+        None => None,
+    };
+
+    Ok(true)
+}
+
+#[tauri::command]
 fn exit_all() {
     let mut system = System::new_all();
     system.refresh_all();
@@ -65,7 +93,7 @@ fn exit_all() {
         "FortniteClient-Win64-Shipping_BE.exe",
         "EasyAntiCheat_EOS.exe",
         "EpicWebHelper.exe",
-        "node.exe"//TODO - since that will kill everything node related, check if the CMD window name has NeoniteV2 as title and only kill that - noah
+        "node.exe" //TODO - since that will kill everything node related, check if the CMD window name has NeoniteV2 as title and only kill that - noah
     ];
 
     for process in processes.iter() {
@@ -82,8 +110,9 @@ fn exit_all() {
 pub fn run() {
     tauri::Builder
         ::default()
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![exit_all, rich_presence])
+        .invoke_handler(tauri::generate_handler![exit_all, rich_presence, check_file_exists])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

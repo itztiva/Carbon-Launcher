@@ -2,11 +2,11 @@
 
 import {
     HiOutlineHome,
-    HiOutlineFolder,
     HiOutlineCog,
 } from "react-icons/hi";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { VscLibrary } from "react-icons/vsc";
 
 export default function Frame({ page }: { page: { page: string } }) {
     const router = useRouter();
@@ -48,7 +48,7 @@ export default function Frame({ page }: { page: { page: string } }) {
                     </div>
                     <div className={getClassName2("Library")}>
                         <button className="flex items-center space-x-2" onClick={() => frameUpdate("/library")}>
-                            <HiOutlineFolder className={getClassName("Library")} />
+                            <VscLibrary className={getClassName("Library")} />
                         </button>
                     </div>
                     <div className="flex-grow"></div>
