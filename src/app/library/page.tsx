@@ -1,61 +1,75 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Trash2, Plus, Pause, Play, Loader2 } from 'lucide-react'
-import { motion, AnimatePresence } from "framer-motion"
-import Frame from "@/components/core/Sidebar"
-import useBuilds from "@/modules/builds/state"
-import Image from "next/image"
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Trash2, Plus, Pause, Play, Loader2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import Frame from "@/components/core/Sidebar";
+import useBuilds from "@/modules/builds/state";
+import Image from "next/image";
 
 export default function Library() {
-  const buildState = useBuilds()
-  const [activeBuild, setActiveBuild] = useState<string | null>(null)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [hoveredBuild, setHoveredBuild] = useState<string | null>(null)
-  const [handlers, setHandlers] = useState<any>(null)
+  const buildState = useBuilds();
+  const [activeBuild, setActiveBuild] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hoveredBuild, setHoveredBuild] = useState<string | null>(null);
+  const [handlers, setHandlers] = useState<any>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined") return
+    if (typeof window === "undefined") return;
 
     const loadHandlers = async () => {
-      const { handleLaunchBuild, handleAddBuild, handleCloseBuild } = await import("../../modules/builds/handlers")
-      setHandlers({ handleLaunchBuild, handleAddBuild, handleCloseBuild })
-    }
+      const { handleLaunchBuild, handleAddBuild, handleCloseBuild } =
+        await import("../../modules/builds/handlers");
+      setHandlers({ handleLaunchBuild, handleAddBuild, handleCloseBuild });
+    };
 
-    loadHandlers()
-  }, [])
+    loadHandlers();
+  }, []);
 
   useEffect(() => {
     if (handlers?.checkifopen) {
-      handlers.checkifopen(setActiveBuild)
+      handlers.checkifopen(setActiveBuild);
     }
-  }, [handlers])
+  }, [handlers]);
 
   const handlelaunchBuild = async (path: string, version: string) => {
     if (handlers?.handleLaunchBuild) {
-      await handlers.handleLaunchBuild(path, version, activeBuild, setActiveBuild, setIsDialogOpen)
+      await handlers.handleLaunchBuild(
+        path,
+        version,
+        activeBuild,
+        setActiveBuild,
+        setIsDialogOpen
+      );
     }
-  }
+  };
 
   const handleAddBuild = async () => {
     if (handlers?.handleAddBuild) {
-      await handlers.handleAddBuild(setIsLoading)
+      await handlers.handleAddBuild(setIsLoading);
     }
-  }
+  };
 
   const handleCloseBuild = async () => {
     if (handlers?.handleCloseBuild) {
-      await handlers.handleCloseBuild(setActiveBuild, setIsDialogOpen)
-      setActiveBuild(null)
-      setIsDialogOpen(false)
+      await handlers.handleCloseBuild(setActiveBuild, setIsDialogOpen);
+      setActiveBuild(null);
+      setIsDialogOpen(false);
     }
-  }
+  };
 
-  const builds = Array.from(buildState?.builds?.values() || [])
+  const builds = Array.from(buildState?.builds?.values() || []);
 
   return (
     <div className="flex min-h-screen text-white">
@@ -67,15 +81,20 @@ export default function Library() {
         className="flex-1 p-4"
       >
         <div className="mx-auto max-w-[1800px]">
-        <h1 className="text-2xl font-bold mt-6 ml-1 mb-4">Library</h1>
+          <h1 className="text-2xl font-bold mt-6 ml-1 mb-4">Library</h1>
           <ScrollArea className="h-[calc(100vh-8rem)] pr-4">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
               <AnimatePresence>
                 {builds.map((build, index) => {
-                  if (!build) return null
-                  const versionNumber = Number(build.version)
-                  const isActive = activeBuild === build.path
-                  const chapter = versionNumber < 10.4 ? "Chapter 1" : versionNumber < 18.4 ? "Chapter 2" : "Chapter 3"
+                  if (!build) return null;
+                  const versionNumber = Number(build.version);
+                  const isActive = activeBuild === build.path;
+                  const chapter =
+                    versionNumber < 10.4
+                      ? "Chapter 1"
+                      : versionNumber < 18.4
+                      ? "Chapter 2"
+                      : "Chapter 3";
 
                   return (
                     <motion.div
@@ -92,7 +111,9 @@ export default function Library() {
                     >
                       <button
                         className="w-full text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
-                        onClick={() => handlelaunchBuild(build.path, build.version)}
+                        onClick={() =>
+                          handlelaunchBuild(build.path, build.version)
+                        }
                         disabled={activeBuild !== null && !isActive}
                       >
                         <div className="relative aspect-square overflow-hidden">
@@ -116,18 +137,24 @@ export default function Library() {
                         </div>
                         <div className="p-2 bg-[#1F2025]">
                           <div className="flex items-center justify-between mb-1">
-                            <span className="text-sm font-medium text-white">v{build.version}</span>
-                            <span className="text-xs text-white/70">{chapter}</span>
+                            <span className="text-sm font-medium text-white">
+                              v{build.version}
+                            </span>
+                            <span className="text-xs text-white/70">
+                              {chapter}
+                            </span>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-xs text-white/70 truncate max-w-[70%]">{build.real}</span>
+                            <span className="text-xs text-white/70 truncate max-w-[70%]">
+                              {build.real}
+                            </span>
                             <Button
                               variant="ghost"
                               size="icon"
                               className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
                               onClick={(e) => {
-                                e.stopPropagation()
-                                buildState?.remove?.(build.path)
+                                e.stopPropagation();
+                                buildState?.remove?.(build.path);
                               }}
                             >
                               <Trash2 className="h-3 w-3 text-white" />
@@ -136,7 +163,7 @@ export default function Library() {
                         </div>
                       </button>
                     </motion.div>
-                  )
+                  );
                 })}
               </AnimatePresence>
             </div>
@@ -144,19 +171,19 @@ export default function Library() {
         </div>
 
         <button
-      className="fixed bottom-4 right-4 shadow-lg bg-[#1F2025] text-white border border-white/20 rounded-md px-3 py-2 text-sm font-medium flex items-center justify-center hover:bg-[#2F3035] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#1F2025] focus:ring-white/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-      onClick={() => handleAddBuild()}
-      disabled={isLoading}
-    >
-      {isLoading ? (
-        <Loader2 className="h-4 w-4 animate-spin" />
-      ) : (
-        <>
-          <Plus className="h-4 w-4 mr-1.5" />
-          Add
-        </>
-      )}
-    </button>
+          className="fixed bottom-4 right-4 shadow-lg bg-[#1F2025] text-white border border-white/20 rounded-md px-3 py-2 text-sm font-medium flex items-center justify-center hover:bg-[#2F3035] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#1F2025] focus:ring-white/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          onClick={() => handleAddBuild()}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <>
+              <Plus className="h-4 w-4 mr-1.5" />
+              Add
+            </>
+          )}
+        </button>
       </motion.main>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -168,16 +195,25 @@ export default function Library() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" size="sm" onClick={() => setIsDialogOpen(false)} className="bg-white/10 text-white hover:bg-white/20 border-white/20">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsDialogOpen(false)}
+              className="bg-white/10 text-white hover:bg-white/20 border-white/20"
+            >
               Cancel
             </Button>
-            <Button variant="destructive" size="sm" onClick={handleCloseBuild} className="bg-red-500 text-white hover:bg-red-600">
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleCloseBuild}
+              className="bg-red-500 text-white hover:bg-red-600"
+            >
               Close Game
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
-

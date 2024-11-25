@@ -5,6 +5,7 @@ use std::fmt::{ Display, Formatter };
 use std::os::windows::process::CommandExt;
 use std::process::Command;
 use sysinfo::{ System, SystemExt };
+use sha2::{ Digest, Sha256 };
 
 #[derive(Debug)]
 enum RichPresenceError {
@@ -105,13 +106,25 @@ fn exit_all() {
     }
 }
 
+#[tauri::command]
+async fn calculate_sha256_of_file(file_path: String) -> Result<String, String> {
+    let file_path = std::path::PathBuf::from(file_path);
+
+    if !file_path.exists() {
+        return Err("File does not exist".to_string());
+    }
+    let bytes = std::fs::read(file_path).unwrap();
+    let hash = Sha256::digest(&bytes);
+    return Ok(format!("{:x}", hash));
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder
         ::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![exit_all, rich_presence, check_file_exists])
+        .invoke_handler(tauri::generate_handler![exit_all, rich_presence, calculate_sha256_of_file, check_file_exists])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
