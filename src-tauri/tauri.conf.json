@@ -51,7 +51,7 @@
       {
         "fullscreen": false,
         "height": 550,
-        "resizable": false,
+        "resizable": true,
         "title": "Carbon",
         "width": 850,
         "decorations": false,
