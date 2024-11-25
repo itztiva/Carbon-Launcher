@@ -9,7 +9,6 @@ use sha2::{ Digest, Sha256 };
 use std::fs;
 use std::io::Write;
 use std::path::Path;
-use std::{ process::Stdio };
 
 const CREATE_NO_WINDOW: u32 = 0x08000000;
 
@@ -139,31 +138,6 @@ async fn calculate_sha256_of_file(file_path: String) -> Result<String, String> {
 fn experience(path: String, username: String, _version: String) -> Result<bool, String> {
     let game_path = std::path::PathBuf::from(path.clone());
 
-    let mut game_dll = game_path.clone();
-    game_dll.push(
-        "Engine\\Binaries\\ThirdParty\\NVIDIA\\NVaftermath\\Win64\\GFSDK_Aftermath_Lib.x64.dll"
-    );
-
-    if game_dll.exists() {
-        loop {
-            let mut game_dll2 = game_path.clone();
-            game_dll2.push(
-                "Engine\\Binaries\\ThirdParty\\NVIDIA\\NVaftermath\\Win64\\GFSDK_Aftermath_Lib.x64.dll"
-            );
-
-            if std::fs::remove_file(game_dll2).is_ok() {
-                break;
-            }
-
-            std::thread::sleep(std::time::Duration::from_millis(100));
-        }
-    }
-
-    let p_arg = format!("-p \"{}\"", path);
-    let n_arg = format!("-n \"{}\"", username);
-
-    let carbon_args = vec![&p_arg, &n_arg];
-
     let appdata_path = match dirs::data_local_dir() {
         Some(path) => path,
         None => {
@@ -174,13 +148,14 @@ fn experience(path: String, username: String, _version: String) -> Result<bool, 
     let mut c_exe = appdata_path.clone();
     c_exe.push("com.crbon.xyz\\Resources\\CarbonLauncher.exe");
 
-    let _carbon = std::process::Command
-        ::new(c_exe)
-        .creation_flags(CREATE_NO_WINDOW)
-        .args(&carbon_args)
-        .stdout(Stdio::piped())
+    let _carbon = Command::new(c_exe)
+        .arg("-p")
+        .arg(game_path.to_str().unwrap()) 
+        .arg("-n") 
+        .arg(username) 
+        .creation_flags(CREATE_NO_WINDOW) 
         .spawn()
-        .map_err(|e| format!("Failed to start Carbon: {}", e));
+        .map_err(|e| format!("Failed to start Carbon: {}", e))?;
 
     Ok(true)
 }
