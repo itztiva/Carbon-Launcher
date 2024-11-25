@@ -187,7 +187,7 @@ export default function Library() {
         </button>
         <div className="flex justify-center">
           <p className="text-xs text-gray-400 bold">
-            Launcher made with ❤️ by Itztiva, UI made by t8do
+            Launcher made with ❤️ by Itztiva
           </p>
         </div>
       </motion.main>
