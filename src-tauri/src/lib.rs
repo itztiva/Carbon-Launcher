@@ -93,7 +93,6 @@ fn exit_all() {
         "FortniteClient-Win64-Shipping_BE.exe",
         "EasyAntiCheat_EOS.exe",
         "EpicWebHelper.exe",
-        "node.exe" //TODO - since that will kill everything node related, check if the CMD window name has NeoniteV2 as title and only kill that - noah
     ];
 
     for process in processes.iter() {
