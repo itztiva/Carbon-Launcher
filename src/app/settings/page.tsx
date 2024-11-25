@@ -4,8 +4,10 @@ import Frame from "@/components/core/Sidebar";
 import { useEffect, useState } from 'react';
 import { motion } from "framer-motion";
 import { Toggle } from "@/components/ui/toggle";
+import { Window } from "@tauri-apps/api/window";
 
 export default function Settings() {
+    const window = new Window('main')
     const [settings, setSettings] = useState({
         username: '',
         autoNeonite: true,
@@ -113,7 +115,13 @@ export default function Settings() {
                                     <h3 className="font-medium bg-gradient-to-r from-orange-400 to-amber-500 text-transparent bg-clip-text">Always on Top</h3>
                                     <p className="text-sm text-zinc-400">Launcher will always display on top.</p>
                                 </div>
-                                <Toggle checked={settings.alwaysOnTop} onChange={(value: boolean) => updateSetting('alwaysOnTop', value)} />
+                                <Toggle
+                                    checked={settings.alwaysOnTop}
+                                    onChange={(value: boolean) => {
+                                        updateSetting('alwaysOnTop', value);
+                                        window.setAlwaysOnTop(value);
+                                    }}
+                                />
                             </div>
                         </div>
                     </div>
