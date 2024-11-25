@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Frame from "@/components/core/Sidebar";
 import useBuilds from "@/modules/builds/state";
 import Image from "next/image";
+import { NeptuneStatus } from "@/components/ui/neptuneStatus";
 
 export default function Library() {
   const buildState = useBuilds();
@@ -108,6 +109,7 @@ export default function Library() {
                       onMouseEnter={() => setHoveredBuild(build.path)}
                       onMouseLeave={() => setHoveredBuild(null)}
                     >
+                      <NeptuneStatus />
                       <button
                         className="w-full text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
                         onClick={() =>

@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Frame from '@/components/core/Sidebar'
 import { motion } from "framer-motion"
 import { open } from "@tauri-apps/plugin-shell";
+import { NeptuneStatus } from '@/components/ui/neptuneStatus'
 
 export default function Home() {
   useEffect(() => {
@@ -28,6 +29,7 @@ export default function Home() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
         className="flex-grow p-4 text-white">
+        <NeptuneStatus />
         <h1 className="text-2xl font-bold mt-6 ml-1 mb-4">Home</h1>
         <div className="space-y-4">
           <div className="bg-[#1F2025] rounded-lg p-4">
