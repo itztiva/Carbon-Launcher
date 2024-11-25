@@ -18,7 +18,12 @@ export default function Home() {
       }
     }
 
-    setRPC()
+    if (localStorage.getItem('settings.discordRPC') === 'true' || localStorage.getItem("settings.discordRPC") == null) setRPC()
+    if (localStorage.getItem('settings.alwaysOnTop') === 'true') {
+      const { Window } = require('@tauri-apps/api/window')
+      const window = new Window('main')
+      window.setAlwaysOnTop(true)
+    }
   }, [])
 
   return (

@@ -19,11 +19,18 @@ export default function Settings() {
     useEffect(() => {
         const savedSettings = {
             username: localStorage.getItem('settings.username') || '',
-            autoNeonite: localStorage.getItem('settings.autoNeonite') === 'true',
-            discordRPC: localStorage.getItem('settings.discordRPC') === 'true',
+            autoNeonite: localStorage.getItem('settings.autoNeonite') === 'true' || true,
+            discordRPC: localStorage.getItem('settings.discordRPC') === 'true' || true,
             backendPort: localStorage.getItem('settings.backendPort') || '5595',
             alwaysOnTop: localStorage.getItem('settings.alwaysOnTop') === 'true',
         };
+
+        Object.keys(savedSettings).forEach(key => {
+            if (!localStorage.getItem(`settings.${key}`)) {
+                localStorage.setItem(`settings.${key}`, (savedSettings as any)[key].toString());
+            }
+        });
+
         setSettings(savedSettings);
     }, []);
 
@@ -81,7 +88,7 @@ export default function Settings() {
                             <div className="flex items-center justify-between">
                                 <div className="flex-grow">
                                     <h3 className="font-medium bg-gradient-to-r from-blue-400 to-indigo-600 text-transparent bg-clip-text">DiscordRPC</h3>
-                                    <p className="text-sm text-zinc-400">Turn on and off Discord Rich Presence of the Carbon Launcher</p>
+                                    <p className="text-sm text-zinc-400">Turn on and off Discord RPC on the Carbon Launcher, requires a restart! </p>
                                 </div>
                                 <Toggle checked={settings.discordRPC} onChange={(value: boolean) => updateSetting('discordRPC', value)} />
                             </div>
