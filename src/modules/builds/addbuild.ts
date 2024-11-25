@@ -24,7 +24,7 @@ export const handleAddBuild = async () => {
             .catch(() => undefined)) as string | undefined
 
         if (hash === undefined || typeof KNOWN_FILE_HASHES_256 !== 'object') {
-            sendNotification({ title: "carbon", body: "Invalid Build!" })
+            sendNotification({ title: "Error", body: "Invalid Build!" })
             return null
         }
 
@@ -32,7 +32,7 @@ export const handleAddBuild = async () => {
 
         const verified = KNOWN_FILE_HASHES_256[hash]
         if (!verified) {
-            sendNotification({ title: "carbon", body: "Invalid Build!" })
+            sendNotification({ title: "Error", body: "Invalid Build!" })
             return null
         }
 
@@ -50,7 +50,7 @@ export const handleAddBuild = async () => {
         return true;
     } catch (error) {
         console.error("Error adding build:", error)
-        sendNotification({ title: "carbon", body: "Error adding build!" })
+        sendNotification({ title: "Error", body: "Error adding build!" })
     } finally {
 
     }

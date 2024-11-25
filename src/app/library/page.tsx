@@ -95,8 +95,8 @@ export default function Library() {
                     versionNumber < 10.4
                       ? "Chapter 1"
                       : versionNumber < 18.4
-                        ? "Chapter 2"
-                        : "Chapter 3";
+                      ? "Chapter 2"
+                      : "Chapter 3";
 
                   return (
                     <motion.div
@@ -105,8 +105,9 @@ export default function Library() {
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.9 }}
                       transition={{ duration: 0.2 }}
-                      className={`group relative overflow-hidden rounded-lg bg-white/10 hover:bg-white/20 transition-all ${isActive ? "" : ""
-                        }`}
+                      className={`group relative overflow-hidden rounded-lg bg-white/10 hover:bg-white/20 transition-all ${
+                        isActive ? "" : ""
+                      }`}
                       onMouseEnter={() => setHoveredBuild(build.path)}
                       onMouseLeave={() => setHoveredBuild(null)}
                     >

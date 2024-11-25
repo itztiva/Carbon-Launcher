@@ -6,6 +6,9 @@ use std::os::windows::process::CommandExt;
 use std::process::Command;
 use sysinfo::{ System, SystemExt };
 use sha2::{ Digest, Sha256 };
+use std::fs;
+use std::io::Write;
+use std::path::Path;
 
 #[derive(Debug)]
 enum RichPresenceError {
@@ -93,7 +96,7 @@ fn exit_all() {
         "FortniteClient-Win64-Shipping.exe",
         "FortniteClient-Win64-Shipping_BE.exe",
         "EasyAntiCheat_EOS.exe",
-        "EpicWebHelper.exe",
+        "EpicWebHelper.exe"
     ];
 
     for process in processes.iter() {
@@ -104,6 +107,23 @@ fn exit_all() {
         cmd.creation_flags(CREATE_NO_WINDOW);
         cmd.spawn().unwrap();
     }
+}
+
+#[tauri::command]
+fn download_game_file(url: &str, dest: &str) -> Result<(), String> {
+    let dest_path = Path::new(dest);
+    if let Some(parent) = dest_path.parent() {
+        fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+    }
+    let response = reqwest::blocking::get(url).map_err(|e| e.to_string())?;
+    if !response.status().is_success() {
+        return Err(format!("Failed to download file: {}", response.status()));
+    }
+    let mut file = fs::File::create(dest_path).map_err(|e| e.to_string())?;
+    let content = response.bytes().map_err(|e| e.to_string())?;
+    file.write_all(&content).map_err(|e| e.to_string())?;
+
+    Ok(())
 }
 
 #[tauri::command]
@@ -124,7 +144,15 @@ pub fn run() {
         ::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![exit_all, rich_presence, calculate_sha256_of_file, check_file_exists])
+        .invoke_handler(
+            tauri::generate_handler![
+                exit_all,
+                rich_presence,
+                calculate_sha256_of_file,
+                download_game_file,
+                check_file_exists
+            ]
+        )
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
