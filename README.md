@@ -2,8 +2,6 @@
 
 > A minimal Fortnite launcher made for Carbon.
 
----
-
 ![image](https://github.com/user-attachments/assets/7bcc3e11-9d00-42f8-ad7d-62ae91d45643)
 
 ---
