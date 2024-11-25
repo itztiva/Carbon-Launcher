@@ -6,7 +6,7 @@ type Release = {
   export const KNOWN_FILE_HASHES_256: Record<string, Release> = {
     "7e9ca42b2f4691fe40ab64ed79cd6ae00a3ac0edd2ed909371b00f0e6048202f": {
       version: "1.7.1",
-      release: "8.51-CL-N/A",
+      release: "1.7.1-N/A",
     },
     "fe4737acc30d9efd6abe03f35b932fc608042ce279b0b887027e5fd29e9f6377": {
       version: "1.8",
