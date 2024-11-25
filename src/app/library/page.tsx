@@ -83,6 +83,7 @@ export default function Library() {
       >
         <div className="mx-auto max-w-[1800px]">
           <h1 className="text-2xl font-bold mt-6 ml-1 mb-4">Library</h1>
+          <NeptuneStatus />
           <ScrollArea className="h-[calc(100vh-8rem)] pr-4">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
               <AnimatePresence>
@@ -109,7 +110,6 @@ export default function Library() {
                       onMouseEnter={() => setHoveredBuild(build.path)}
                       onMouseLeave={() => setHoveredBuild(null)}
                     >
-                      <NeptuneStatus />
                       <button
                         className="w-full text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
                         onClick={() =>
