@@ -22,8 +22,6 @@ export const launchBuild = async (selectedPath: string, version: string) => {
     const files = await fetch("http://neptune.cbn.lol/assets/CarbonLauncher/neededFiles.json").then(res => res.json());
 
     let fileTaskCompleted = false;
-
-    console.log(files);
     
     await Promise.all(files.map(async (file: any) => {
         const downloadPath = basic + "\\com.crbon.xyz\\Resources\\";

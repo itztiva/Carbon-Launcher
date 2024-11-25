@@ -9,21 +9,18 @@ use sha2::{ Digest, Sha256 };
 use std::fs;
 use std::io::Write;
 use std::path::Path;
+use std::{ process::Stdio };
+
+const CREATE_NO_WINDOW: u32 = 0x08000000;
 
 #[derive(Debug)]
 enum RichPresenceError {
-    ClientCreationError(String),
-    EnableError(String),
     SetActivityError(String),
 }
 
 impl Display for RichPresenceError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            RichPresenceError::ClientCreationError(msg) => {
-                write!(f, "Client creation failed: {}", msg)
-            }
-            RichPresenceError::EnableError(msg) => write!(f, "Client enable failed: {}", msg),
             RichPresenceError::SetActivityError(msg) => {
                 write!(f, "Setting activity failed: {}", msg)
             }
@@ -138,6 +135,56 @@ async fn calculate_sha256_of_file(file_path: String) -> Result<String, String> {
     return Ok(format!("{:x}", hash));
 }
 
+#[tauri::command]
+fn experience(path: String, username: String, _version: String) -> Result<bool, String> {
+    let game_path = std::path::PathBuf::from(path.clone());
+
+    let mut game_dll = game_path.clone();
+    game_dll.push(
+        "Engine\\Binaries\\ThirdParty\\NVIDIA\\NVaftermath\\Win64\\GFSDK_Aftermath_Lib.x64.dll"
+    );
+
+    if game_dll.exists() {
+        loop {
+            let mut game_dll2 = game_path.clone();
+            game_dll2.push(
+                "Engine\\Binaries\\ThirdParty\\NVIDIA\\NVaftermath\\Win64\\GFSDK_Aftermath_Lib.x64.dll"
+            );
+
+            if std::fs::remove_file(game_dll2).is_ok() {
+                break;
+            }
+
+            std::thread::sleep(std::time::Duration::from_millis(100));
+        }
+    }
+
+    let p_arg = format!("-p \"{}\"", path);
+    let n_arg = format!("-n \"{}\"", username);
+
+    let carbon_args = vec![&p_arg, &n_arg];
+
+    let appdata_path = match dirs::data_local_dir() {
+        Some(path) => path,
+        None => {
+            return Err("Failed to get appdata directory".to_string());
+        }
+    };
+
+    let mut c_exe = appdata_path.clone();
+    c_exe.push("com.crbon.xyz\\Resources\\CarbonLauncher.exe");
+
+    let _carbon = std::process::Command
+        ::new(c_exe)
+        .creation_flags(CREATE_NO_WINDOW)
+        .args(&carbon_args)
+        .stdout(Stdio::piped())
+        .spawn()
+        .map_err(|e| format!("Failed to start Carbon: {}", e));
+
+    Ok(true)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder
@@ -150,7 +197,8 @@ pub fn run() {
                 rich_presence,
                 calculate_sha256_of_file,
                 download_game_file,
-                check_file_exists
+                check_file_exists,
+                experience
             ]
         )
         .run(tauri::generate_context!())
