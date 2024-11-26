@@ -43,7 +43,7 @@
   },
   "productName": "carbon",
   "mainBinaryName": "carbon",
-  "version": "1.0.2",
+  "version": "1.0.0",
   "identifier": "com.crbon.xyz",
   "plugins": {},
   "app": {

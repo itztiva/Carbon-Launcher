@@ -3,6 +3,7 @@
 import Frame from "@/components/core/Sidebar";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import tconfig from "@/../src-tauri/tauri.conf.json";
 import { Toggle } from "@/components/ui/toggle";
 import { Window } from "@tauri-apps/api/window";
 
@@ -180,6 +181,30 @@ export default function Settings() {
                   }}
                 />
               </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex-grow mr-4">
+                  <h3 className="font-medium bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text">
+                    Version
+                  </h3>
+                  <p className="text-sm text-zinc-400">
+                    Version of the Carbon Launcher you are currently on.
+                  </p>
+                </div>
+                <div className="relative flex-shrink-0">
+                  <input
+                    type="text"
+                    value={tconfig.version}
+                    readOnly
+                    className="w-24 px-2 py-1 bg-zinc-900 border border-zinc-800 rounded text-right appearance-none"
+                    style={{
+                      WebkitAppearance: "none",
+                      MozAppearance: "textfield",
+                    }}
+                  />
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
