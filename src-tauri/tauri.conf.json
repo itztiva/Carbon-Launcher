@@ -38,14 +38,17 @@
       "deb": {
         "depends": []
       }
-    },
-    "createUpdaterArtifacts": "v1Compatible"
+    }
   },
-  "productName": "carbon",
-  "mainBinaryName": "carbon",
+  "productName": "Carbon",
+  "mainBinaryName": "Carbon",
   "version": "1.0.0",
   "identifier": "com.crbon.xyz",
-  "plugins": {},
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDFGODNDQjgyNERCRkVDM0QKUldROTdMOU5nc3VESDNoM2pwa1lCSFNaSFhrcGR4YjlhQ0JmK1RpanhtMEZrdEttT2pFckp6TVUK"
+    }
+  },
   "app": {
     "windows": [
       {
