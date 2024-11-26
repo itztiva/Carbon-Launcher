@@ -25,6 +25,7 @@ export default function Library() {
   const [isLoading, setIsLoading] = useState(false);
   const [hoveredBuild, setHoveredBuild] = useState<string | null>(null);
   const [handlers, setHandlers] = useState<any>(null);
+  const [isUsernameDialogOpen, setIsUsernameDialogOpen] = useState(false); 
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -45,6 +46,13 @@ export default function Library() {
   }, [handlers]);
 
   const handlelaunchBuild = async (path: string, version: string) => {
+    const username = localStorage.getItem("settings.username");
+
+    if (!username || username === "") {
+      setIsUsernameDialogOpen(true); 
+      return; 
+    }
+
     if (handlers?.handleLaunchBuild) {
       await handlers.handleLaunchBuild(
         path,
@@ -197,6 +205,27 @@ export default function Library() {
           </p>
         </div>
       </motion.main>
+
+      <Dialog open={isUsernameDialogOpen} onOpenChange={setIsUsernameDialogOpen}>
+        <DialogContent className="sm:max-w-[325px] bg-[#1F2025] text-white">
+          <DialogHeader>
+            <DialogTitle>Set Your Username</DialogTitle>
+            <DialogDescription className="text-white/70">
+              Please go to the settings and set your username before launching the game.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsUsernameDialogOpen(false)}
+              className="bg-white/10 text-white hover:bg-white/20 border-white/20"
+            >
+              OK
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[325px] bg-[#1F2025] text-white">

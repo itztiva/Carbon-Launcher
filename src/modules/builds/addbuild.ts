@@ -14,7 +14,7 @@ export const handleAddBuild = async () => {
         const selectedPath = await open({ directory: true, multiple: false })
 
         if (!selectedPath) {
-            return null
+            return true;
         }
 
         const splash = `${selectedPath}\\FortniteGame\\Content\\Splash\\Splash.bmp`
@@ -25,22 +25,32 @@ export const handleAddBuild = async () => {
 
         if (hash === undefined || typeof KNOWN_FILE_HASHES_256 !== 'object') {
             sendNotification({ title: "Error", body: "Invalid Build!" })
-            return null
+            return true;
         }
 
         const splashExists = await invoke("check_file_exists", { path: splash, size: null })
 
-        const verified = KNOWN_FILE_HASHES_256[hash]
-        if (!verified) {
-            sendNotification({ title: "Error", body: "Invalid Build!" })
-            return null
+        const hashexists = KNOWN_FILE_HASHES_256[hash]
+        
+        let version = "Unknown Version";
+        let release = "Unknown CL";
+
+        if (!hashexists) {
+            const hexCheck = await invoke("search_for_version", { path: exe })
+            if (!hexCheck) {
+                sendNotification({ title: "Error", body: "Invalid Build!" })
+                return true;
+            }
+        } else {
+            version = hashexists.version
+            release = hashexists.release
         }
 
         const data = {
             splash: splashExists ? convertFileSrc(splash) : "no splash",
             path: selectedPath.toString(),
-            version: verified.version || "?",
-            real: verified.release || "Unknown Version",
+            version: version || "?",
+            real: release || "Unknown Version",
             verified: true,
             open: false,
             loading: false,

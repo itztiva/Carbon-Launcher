@@ -10,8 +10,15 @@ use std::fs;
 use std::io::Write;
 use std::path::Path;
 use unrar::Archive;
+use std::fs::File;
+use std::io::{Read};
+use std::env;
 
 const CREATE_NO_WINDOW: u32 = 0x08000000;
+const SEARCH_PATTERN: &[u8] = &[
+    0x2B, 0x2B, 0x46, 0x6F, 0x72, 0x74, 0x6E, 0x69, 0x74, 0x65, 0x2B, 0x52, 0x65, 0x6C,
+    0x65, 0x61, 0x73, 0x65, 0x2D,
+];
 
 #[derive(Debug)]
 enum RichPresenceError {
@@ -234,6 +241,23 @@ fn experience(path: String, username: String, _version: String) -> Result<bool, 
     Ok(true)
 }
 
+#[tauri::command]
+fn search_for_version(path: &str) -> Result<bool, String> {
+    let mut file = File::open(path).map_err(|e| e.to_string())?; 
+    let mut buffer = Vec::new();
+    file.read_to_end(&mut buffer).map_err(|e| e.to_string())?; 
+
+    for window in buffer.windows(SEARCH_PATTERN.len()) {
+        if window == SEARCH_PATTERN {
+            println!("Pattern found at: {}", window.as_ptr() as usize);
+            return Ok(true); 
+        }
+    }
+
+    println!("Pattern not found.");
+    Ok(false)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder
@@ -249,6 +273,7 @@ pub fn run() {
                 download_game_file,
                 check_file_exists,
                 extract_rar,
+                search_for_version,
                 experience
             ]
         )
