@@ -92,7 +92,8 @@ fn exit_all() {
         "FortniteClient-Win64-Shipping.exe",
         "FortniteClient-Win64-Shipping_BE.exe",
         "EasyAntiCheat_EOS.exe",
-        "EpicWebHelper.exe"
+        "EpicWebHelper.exe",
+        "CarbonLauncher.exe"
     ];
 
     for process in processes.iter() {
