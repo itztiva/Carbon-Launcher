@@ -218,7 +218,10 @@ export default function Library() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setIsUsernameDialogOpen(false)}
+              onClick={() => {
+                setIsUsernameDialogOpen(false)
+                window.location.href = "/settings";
+              }}
               className="bg-white/10 text-white hover:bg-white/20 border-white/20"
             >
               OK
