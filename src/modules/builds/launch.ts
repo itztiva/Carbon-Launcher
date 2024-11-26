@@ -22,7 +22,7 @@ export const launchBuild = async (selectedPath: string, version: string) => {
     const files = await fetch("http://neptune.cbn.lol/assets/CarbonLauncher/neededFiles.json").then(res => res.json());
 
     let fileTaskCompleted = false;
-    
+
     await Promise.all(files.map(async (file: any) => {
         const downloadPath = basic + "\\com.crbon.xyz\\Resources\\";
 
@@ -31,12 +31,40 @@ export const launchBuild = async (selectedPath: string, version: string) => {
             size: file.size
         });
 
-        if (!exists) {
+        if (!exists && !file.name.includes(".rar")) {
             await invoke("download_game_file", {
                 url: file.url,
                 dest: downloadPath + file.name,
             });
         }
+
+        if (file.name.includes(".rar")) {
+            console.log("wow")
+            const rarexists = await invoke("check_file_exists", {
+                path: downloadPath + file.name.replace(".rar", ""),
+                size: file.size
+            });
+
+            if (!rarexists) {
+                const downloaded = await invoke("download_game_file", {
+                    url: file.url,
+                    dest: downloadPath + file.name,
+                });
+
+                if (downloaded) {
+                    const rarexists = await invoke("check_file_exists", {
+                        path: downloadPath + file.name,
+                        size: file.size
+                    });
+                    if (rarexists) {
+                        await invoke("extract_rar", {
+                            path: downloadPath + file.name,
+                        });
+                    }
+                }
+            }
+        }
+
     }));
 
     fileTaskCompleted = true;

@@ -9,6 +9,7 @@ use sha2::{ Digest, Sha256 };
 use std::fs;
 use std::io::Write;
 use std::path::Path;
+use unrar::Archive;
 
 const CREATE_NO_WINDOW: u32 = 0x08000000;
 
@@ -80,6 +81,36 @@ async fn check_file_exists(path: &str, size: Option<u64>) -> Result<bool, String
 }
 
 #[tauri::command]
+fn extract_rar(path: &str) -> Result<(), String> {
+    let rar_file = std::path::Path::new(path);
+    if !rar_file.exists() {
+        return Err(format!("RAR file not found: {}", path));
+    }
+
+    let mut archive = Archive::new(path).open_for_processing().unwrap();
+    while let Some(header) = archive.read_header().unwrap() {
+        println!(
+            "{} bytes: {}",
+            header.entry().unpacked_size,
+            header.entry().filename.to_string_lossy()
+        );
+
+        archive = if header.entry().is_file() {
+            let path_file = std::path::Path
+                ::new(&path)
+                .parent()
+                .unwrap()
+                .join(header.entry().filename.as_path());
+            header.extract_to(path_file.as_path()).map_err(|e| format!("Failed to extract: {}", e))?
+        } else {
+            header.skip().map_err(|e| format!("Failed to skip: {}", e))?
+        };
+    }
+    std::fs::remove_file(rar_file).expect("Could not delete rar file");
+    Ok(())
+}
+
+#[tauri::command]
 fn exit_all() {
     let mut system = System::new_all();
     system.refresh_all();
@@ -102,7 +133,41 @@ fn exit_all() {
         cmd.arg("/IM");
         cmd.arg(process);
         cmd.creation_flags(CREATE_NO_WINDOW);
-        cmd.spawn().unwrap();
+        cmd.spawn();
+    }
+
+    let output = Command::new("wmic")
+        .arg("process")
+        .arg("where")
+        .arg("name='node.exe'")
+        .arg("get")
+        .arg("processid,commandline")
+        .output()
+        .expect("wmic fail");
+
+    let output_str = String::from_utf8_lossy(&output.stdout);
+
+    if !output.stdout.is_empty() {
+        for line in output_str.lines().skip(1) {
+            let line = line.trim();
+            if line.contains("app.js") {
+                let columns: Vec<&str> = line.split_whitespace().collect();
+                if let Some(pid_str) = columns.last() {
+                    if let Ok(pid) = pid_str.parse::<u32>() {
+                        let mut cmd = Command::new("taskkill");
+                        cmd.arg("/F");
+                        cmd.arg("/PID");
+                        cmd.arg(pid.to_string());
+                        cmd.creation_flags(CREATE_NO_WINDOW);
+                        cmd.spawn();
+                    } else {
+                        println!("fail on parse PID: {}", line);
+                    };
+                }
+            }
+        }
+    } else {
+        println!("Neonite isnt running.");
     }
 }
 
@@ -149,12 +214,20 @@ fn experience(path: String, username: String, _version: String) -> Result<bool, 
     let mut c_exe = appdata_path.clone();
     c_exe.push("com.crbon.xyz\\Resources\\CarbonLauncher.exe");
 
+    let mut neonite_bat = appdata_path.clone();
+    neonite_bat.push("com.crbon.xyz\\Resources\\NeoniteV2\\Start Neonite.bat");
+
+    let _neonite = Command::new(neonite_bat)
+        .creation_flags(CREATE_NO_WINDOW)
+        .spawn()
+        .map_err(|e| format!("Failed to start Neonite: {}", e))?;
+
     let _carbon = Command::new(c_exe)
         .arg("-p")
-        .arg(game_path.to_str().unwrap()) 
-        .arg("-n") 
-        .arg(username) 
-        .creation_flags(CREATE_NO_WINDOW) 
+        .arg(game_path.to_str().unwrap())
+        .arg("-n")
+        .arg(username)
+        .creation_flags(CREATE_NO_WINDOW)
         .spawn()
         .map_err(|e| format!("Failed to start Carbon: {}", e))?;
 
@@ -174,6 +247,7 @@ pub fn run() {
                 calculate_sha256_of_file,
                 download_game_file,
                 check_file_exists,
+                extract_rar,
                 experience
             ]
         )

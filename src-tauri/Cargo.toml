@@ -32,6 +32,7 @@ indicatif = "0.15.0"
 tokio = { version = "1", features = ["full"] }
 sha2 = "0.9"
 sha1 = "0.10.5"
+unrar = "0.5.1"
 winapi = { version = "0.3", features = ["tlhelp32", "shellapi", "winbase"] }
 tauri-plugin-deep-link = { git = "https://github.com/FabianLars/tauri-plugin-deep-link", branch = "main" }
 regex = "1"
