@@ -208,6 +208,33 @@ async fn calculate_sha256_of_file(file_path: String) -> Result<String, String> {
 }
 
 #[tauri::command]
+fn get_fortnite_processid() -> Result<Option<String>, String> {
+    let output = std::process::Command::new("wmic")
+        .creation_flags(CREATE_NO_WINDOW)
+        .args(&[
+            "process",
+            "where",
+            "name='FortniteClient-Win64-Shipping.exe'",
+            "get",
+            "ExecutablePath",
+        ])
+        .output()
+        .map_err(|e| e.to_string())?;
+
+    let output_str = String::from_utf8_lossy(&output.stdout);
+
+    for line in output_str.lines() {
+        let trimmed = line.trim();
+        if !trimmed.is_empty() && !trimmed.starts_with("ExecutablePath") {
+            return Ok(Some(trimmed.to_string()));
+        }
+    }
+
+    Ok(None)
+}
+
+
+#[tauri::command]
 fn experience(path: String, username: String, _version: String) -> Result<bool, String> {
     let game_path = std::path::PathBuf::from(path.clone());
 
@@ -299,6 +326,7 @@ pub fn run() {
             calculate_sha256_of_file,
             download_game_file,
             check_file_exists,
+            get_fortnite_processid,
             extract_rar,
             search_for_version,
             experience

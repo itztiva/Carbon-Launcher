@@ -31,19 +31,23 @@ export default function Library() {
     if (typeof window === "undefined") return;
 
     const loadHandlers = async () => {
-      const { handleLaunchBuild, handleAddBuild, handleCloseBuild } =
+      const { handleLaunchBuild, handleAddBuild, handleCloseBuild, checkifopen } =
         await import("../../modules/builds/handlers");
-      setHandlers({ handleLaunchBuild, handleAddBuild, handleCloseBuild });
+      setHandlers({ handleLaunchBuild, handleAddBuild, handleCloseBuild, checkifopen });
     };
 
     loadHandlers();
   }, []);
 
   useEffect(() => {
-    if (handlers?.checkifopen) {
+    if (!handlers?.checkifopen) return;
+  
+    const i = setInterval(() => {
       handlers.checkifopen(setActiveBuild);
-    }
-  }, [handlers]);
+    }, 5000);
+    
+    return () => clearInterval(i);
+  }, [handlers?.checkifopen, setActiveBuild]);
 
   const handlelaunchBuild = async (path: string, version: string) => {
     const username = localStorage.getItem("settings.username");

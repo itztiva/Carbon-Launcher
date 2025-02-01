@@ -26,3 +26,17 @@ export const handleCloseBuild = async (setActiveBuild: Function, setIsDialogOpen
     setIsDialogOpen(false);
   }
 };
+
+export const checkifopen = async (setActiveBuild: Function) => {
+  const isOpen = await invoke("get_fortnite_processid");
+  if (isOpen) {
+    if (typeof isOpen === "string") {
+      setActiveBuild(
+        isOpen.replace(
+          "\\FortniteGame\\Binaries\\Win64\\FortniteClient-Win64-Shipping.exe",
+          ""
+        )
+      );
+    }
+  }
+};
