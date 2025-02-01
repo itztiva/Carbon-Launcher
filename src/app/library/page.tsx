@@ -25,7 +25,7 @@ export default function Library() {
   const [isLoading, setIsLoading] = useState(false);
   const [hoveredBuild, setHoveredBuild] = useState<string | null>(null);
   const [handlers, setHandlers] = useState<any>(null);
-  const [isUsernameDialogOpen, setIsUsernameDialogOpen] = useState(false); 
+  const [isUsernameDialogOpen, setIsUsernameDialogOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -49,8 +49,8 @@ export default function Library() {
     const username = localStorage.getItem("settings.username");
 
     if (!username || username === "") {
-      setIsUsernameDialogOpen(true); 
-      return; 
+      setIsUsernameDialogOpen(true);
+      return;
     }
 
     if (handlers?.handleLaunchBuild) {
@@ -100,17 +100,17 @@ export default function Library() {
                   const versionNumber = Number(build.version);
                   const isActive = activeBuild === build.path;
                   const chapter =
-                    versionNumber <= 10.40
-                      ? "Chapter 1"
-                      : versionNumber <= 18.40
-                        ? "Chapter 2"
-                        : versionNumber <= 23.0
-                          ? "Chapter 3"
-                          : versionNumber <= 27.11
-                            ? "Chapter 4"
-                            : versionNumber <= 32.11
-                              ? "Chapter 5"
-                              : "Chapter 6";
+                    versionNumber >= 32.11
+                      ? "Chapter 6"
+                      : versionNumber >= 27.11
+                        ? "Chapter 5"
+                        : versionNumber >= 23.0
+                          ? "Chapter 4"
+                          : versionNumber >= 18.40
+                            ? "Chapter 3"
+                            : versionNumber >= 10.40
+                              ? "Chapter 2"
+                              : "Chapter 1";
 
                   return (
                     <motion.div
