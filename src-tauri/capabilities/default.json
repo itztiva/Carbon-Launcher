@@ -6,6 +6,14 @@
     "main"
   ],
   "permissions": [
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        {
+          "path": "*/**"
+        }
+      ]
+    },
     "core:default",
     "core:window:allow-create",
     "core:window:allow-center",
@@ -43,6 +51,8 @@
     "core:webview:allow-print",
     "shell:allow-open",
     "shell:default",
-    "dialog:default"
+    "dialog:default",
+    "fs:default",
+    "fs:allow-write-text-file"
   ]
 }

@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import tconfig from "@/../src-tauri/tauri.conf.json";
 import { Toggle } from "@/components/ui/toggle";
 import { Window } from "@tauri-apps/api/window";
+import { BaseDirectory, readFile, writeTextFile } from '@tauri-apps/plugin-fs';
 
 export default function Settings() {
   const window = new Window("main");
@@ -18,6 +19,18 @@ export default function Settings() {
   });
 
   useEffect(() => {
+    const a = async () => {
+      const file = await readFile("Carbon\\Orion.settings.json", {
+        baseDir: BaseDirectory.LocalData,
+      });
+      if (!file) return;
+
+      const data = JSON.parse(new TextDecoder().decode(file));
+
+      settings.backendPort = data.ListenToPort;
+      localStorage.setItem("settings.backendPort", data.ListenToPort);
+    }
+
     const savedSettings = {
       username: localStorage.getItem("settings.username") || "",
       autoNeonite:
@@ -38,9 +51,29 @@ export default function Settings() {
     });
 
     setSettings(savedSettings);
+    a();
   }, []);
 
-  const updateSetting = (key: string, value: string | boolean) => {
+  const updateSetting = async (key: string, value: string | boolean) => {
+    if (key === "backendPort") {
+      const file = await readFile("Carbon\\Orion.settings.json", {
+        baseDir: BaseDirectory.LocalData,
+      });
+      if (!file) return;
+      const data = JSON.parse(new TextDecoder().decode(file));
+      data.ListenToPort = Number(value);
+      const contents = JSON.stringify(data, null, 2);
+      await writeTextFile("Carbon\\Orion.settings.json", contents, {
+        baseDir: BaseDirectory.LocalData,
+      });
+
+      setSettings((prev) => {
+        const newSettings = { ...prev, [key]: value.toString() };
+        localStorage.setItem(`settings.${key}`, value.toString());
+        return newSettings;
+      });
+    }
+
     setSettings((prev) => {
       const newSettings = { ...prev, [key]: value };
       localStorage.setItem(`settings.${key}`, value.toString());

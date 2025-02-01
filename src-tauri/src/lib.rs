@@ -1,18 +1,18 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-use declarative_discord_rich_presence::activity::{ Activity, Button, Timestamps };
+use declarative_discord_rich_presence::activity::{Activity, Button, Timestamps};
 use declarative_discord_rich_presence::DeclarativeDiscordIpcClient;
-use std::fmt::{ Display, Formatter };
-use std::os::windows::process::CommandExt;
-use std::process::Command;
-use sysinfo::{ System, SystemExt };
-use sha2::{ Digest, Sha256 };
-use std::fs;
-use std::io::Write;
-use std::path::Path;
-use unrar::Archive;
-use std::fs::File;
-use std::io::{Read};
+use sha2::{Digest, Sha256};
 use std::env;
+use std::fmt::{Display, Formatter};
+use std::fs;
+use std::fs::File;
+use std::io::Read;
+use std::io::Write;
+use std::os::windows::process::CommandExt;
+use std::path::Path;
+use std::process::Command;
+use sysinfo::{System, SystemExt};
+use unrar::Archive;
 
 const CREATE_NO_WINDOW: u32 = 0x08000000;
 
@@ -39,18 +39,19 @@ fn rich_presence() {
 
     client.enable();
 
-    let buttons = vec![
-        Button::new(
-            String::from("Discord"),
-            String::from("https://discord.gg/carbon-897532507048796210")
-        )
-    ];
+    let buttons = vec![Button::new(
+        String::from("Discord"),
+        String::from("https://discord.gg/carbon-897532507048796210"),
+    )];
 
     let timestamp = Timestamps::new();
 
     let _ = client
         .set_activity(
-            Activity::new().buttons(buttons).timestamps(timestamp).details("Cranium V1.7")
+            Activity::new()
+                .buttons(buttons)
+                .timestamps(timestamp)
+                .details("Cranium V1.7"),
         )
         .map_err(|e| RichPresenceError::SetActivityError(e.to_string()));
 }
@@ -99,14 +100,17 @@ fn extract_rar(path: &str) -> Result<(), String> {
         );
 
         archive = if header.entry().is_file() {
-            let path_file = std::path::Path
-                ::new(&path)
+            let path_file = std::path::Path::new(&path)
                 .parent()
                 .unwrap()
                 .join(header.entry().filename.as_path());
-            header.extract_to(path_file.as_path()).map_err(|e| format!("Failed to extract: {}", e))?
+            header
+                .extract_to(path_file.as_path())
+                .map_err(|e| format!("Failed to extract: {}", e))?
         } else {
-            header.skip().map_err(|e| format!("Failed to skip: {}", e))?
+            header
+                .skip()
+                .map_err(|e| format!("Failed to skip: {}", e))?
         };
     }
     std::fs::remove_file(rar_file).expect("Could not delete rar file");
@@ -127,7 +131,7 @@ fn exit_all() {
         "FortniteClient-Win64-Shipping_BE.exe",
         "EasyAntiCheat_EOS.exe",
         "EpicWebHelper.exe",
-        "CarbonLauncher.exe"
+        "CarbonLauncher.exe",
     ];
 
     for process in processes.iter() {
@@ -244,14 +248,13 @@ fn search_for_version(path: &str) -> Result<Vec<String>, String> {
     file.read_to_end(&mut buffer).map_err(|e| e.to_string())?;
 
     let pattern = [
-        0x2b, 0x00, 0x2b, 0x00, 0x46, 0x00, 0x6f, 0x00,
-        0x72, 0x00, 0x74, 0x00, 0x6e, 0x00, 0x69, 0x00,
-        0x74, 0x00, 0x65, 0x00, 0x2b, 0x00,
+        0x2b, 0x00, 0x2b, 0x00, 0x46, 0x00, 0x6f, 0x00, 0x72, 0x00, 0x74, 0x00, 0x6e, 0x00, 0x69,
+        0x00, 0x74, 0x00, 0x65, 0x00, 0x2b, 0x00,
     ];
 
     let mut matches = Vec::new();
     for (i, window) in buffer.windows(pattern.len()).enumerate() {
-        if window == pattern {            
+        if window == pattern {
             let start = i.saturating_sub(32);
             let end = (i + pattern.len() + 64).min(buffer.len());
 
@@ -285,23 +288,21 @@ fn find_end(data: &[u8]) -> Option<usize> {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder
-        ::default()
+    tauri::Builder::default()
+        .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(
-            tauri::generate_handler![
-                exit_all,
-                rich_presence,
-                calculate_sha256_of_file,
-                download_game_file,
-                check_file_exists,
-                extract_rar,
-                search_for_version,
-                experience
-            ]
-        )
+        .invoke_handler(tauri::generate_handler![
+            exit_all,
+            rich_presence,
+            calculate_sha256_of_file,
+            download_game_file,
+            check_file_exists,
+            extract_rar,
+            search_for_version,
+            experience
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
