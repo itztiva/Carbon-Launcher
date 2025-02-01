@@ -7,7 +7,7 @@ import { NeptuneStatus } from "@/components/ui/neptuneStatus";
 export default function News() {
   return (
     <div className="flex h-screen">
-      <Frame page={{ page: "Home" }} />
+      <Frame page={{ page: "News" }} />
       <motion.main
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
