@@ -100,15 +100,15 @@ export default function Library() {
                   const versionNumber = Number(build.version);
                   const isActive = activeBuild === build.path;
                   const chapter =
-                    versionNumber < 10.4
+                    versionNumber <= 10.40
                       ? "Chapter 1"
-                      : versionNumber < 18.4
+                      : versionNumber <= 18.40
                         ? "Chapter 2"
-                        : versionNumber < 23.0
+                        : versionNumber <= 23.0
                           ? "Chapter 3"
-                          : versionNumber < 27.12
+                          : versionNumber <= 27.11
                             ? "Chapter 4"
-                            : versionNumber < 32.12
+                            : versionNumber <= 32.11
                               ? "Chapter 5"
                               : "Chapter 6";
 

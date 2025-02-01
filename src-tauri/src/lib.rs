@@ -15,10 +15,6 @@ use std::io::{Read};
 use std::env;
 
 const CREATE_NO_WINDOW: u32 = 0x08000000;
-const SEARCH_PATTERN: &[u8] = &[
-    0x2B, 0x2B, 0x46, 0x6F, 0x72, 0x74, 0x6E, 0x69, 0x74, 0x65, 0x2B, 0x52, 0x65, 0x6C,
-    0x65, 0x61, 0x73, 0x65, 0x2D,
-];
 
 #[derive(Debug)]
 enum RichPresenceError {
@@ -242,20 +238,49 @@ fn experience(path: String, username: String, _version: String) -> Result<bool, 
 }
 
 #[tauri::command]
-fn search_for_version(path: &str) -> Result<bool, String> {
-    let mut file = File::open(path).map_err(|e| e.to_string())?; 
+fn search_for_version(path: &str) -> Result<Vec<String>, String> {
+    let mut file = File::open(path).map_err(|e| e.to_string())?;
     let mut buffer = Vec::new();
-    file.read_to_end(&mut buffer).map_err(|e| e.to_string())?; 
+    file.read_to_end(&mut buffer).map_err(|e| e.to_string())?;
 
-    for window in buffer.windows(SEARCH_PATTERN.len()) {
-        if window == SEARCH_PATTERN {
-            println!("Pattern found at: {}", window.as_ptr() as usize);
-            return Ok(true); 
+    let pattern = [
+        0x2b, 0x00, 0x2b, 0x00, 0x46, 0x00, 0x6f, 0x00,
+        0x72, 0x00, 0x74, 0x00, 0x6e, 0x00, 0x69, 0x00,
+        0x74, 0x00, 0x65, 0x00, 0x2b, 0x00,
+    ];
+
+    let mut matches = Vec::new();
+    for (i, window) in buffer.windows(pattern.len()).enumerate() {
+        if window == pattern {            
+            let start = i.saturating_sub(32);
+            let end = (i + pattern.len() + 64).min(buffer.len());
+
+            let end_index = find_end(&buffer[i + pattern.len()..end]);
+            if let Some(end) = end_index {
+                let utf16_slice = unsafe {
+                    std::slice::from_raw_parts(
+                        buffer[i..i + pattern.len() + end].as_ptr() as *const u16,
+                        (pattern.len() + end) / 2,
+                    )
+                };
+                let s = String::from_utf16_lossy(utf16_slice);
+                matches.push(s.trim_end_matches('\0').to_string());
+            }
         }
     }
 
-    println!("Pattern not found.");
-    Ok(false)
+    Ok(matches)
+}
+
+fn find_end(data: &[u8]) -> Option<usize> {
+    let mut i = 0;
+    while i + 1 < data.len() {
+        if data[i] == 0 && data[i + 1] == 0 {
+            return Some(i);
+        }
+        i += 2;
+    }
+    None
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
