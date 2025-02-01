@@ -3,6 +3,7 @@
 import {
     HiOutlineHome,
     HiOutlineCog,
+    HiOutlineNewspaper,
 } from "react-icons/hi";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -49,6 +50,11 @@ export default function Frame({ page }: { page: { page: string } }) {
                     <div className={getClassName2("Library")}>
                         <button className="flex items-center space-x-2" onClick={() => frameUpdate("/library")}>
                             <VscLibrary className={getClassName("Library")} />
+                        </button>
+                    </div>
+                    <div className={getClassName2("News")}>
+                        <button className="flex items-center space-x-2" onClick={() => frameUpdate("/news")}>
+                            <HiOutlineNewspaper className={getClassName("News")} />
                         </button>
                     </div>
                     <div className="flex-grow"></div>

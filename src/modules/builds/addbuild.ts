@@ -34,12 +34,6 @@ export const handleAddBuild = async () => {
         let release = "Unknown CL";
 
         const hexCheck = await invoke("search_for_version", { path: exe }) as string[];
-        console.log(hexCheck);
-
-        if (hexCheck.length === 0) {
-            sendNotification({ title: "Error", body: "Invalid Build!" });
-            return true;
-        }
 
         let foundMatch = false;
         for (const str of hexCheck) {
@@ -51,7 +45,6 @@ export const handleAddBuild = async () => {
                 break;
             } else if (match && str.includes("Live") || match && str.includes("Cert")) {
                 if (match) {
-                    console.log("wow", match);
                     switch (parseInt(match[2])) {
                         case 3870737: { version = "2.4.2"; release = "2.4.2-CL-3870737"; foundMatch = true; break; }
                         case 3858292: { version = "2.4"; release = "2.4-CL-3858292"; foundMatch = true; break; }
@@ -72,7 +65,7 @@ export const handleAddBuild = async () => {
                 }
             }
         }
-        
+
         const data = {
             splash: splashExists ? convertFileSrc(splash) : "no splash",
             path: selectedPath.toString(),
