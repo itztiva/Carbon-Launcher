@@ -74,11 +74,12 @@ export const launchBuild = async (selectedPath: string, version: string) => {
         sendNotification({ title: `Starting ${version}`, body: `This may take awhile so please wait while the game loads!`, sound: "ms-winsoundevent:Notification.Default" });
 
         console.log("launching", version)
-
+        
         await invoke("experience", {
             path,
             username,
             version: version,
+            n: localStorage.getItem("settings.autoNeonite")
         });
 
         return true;
