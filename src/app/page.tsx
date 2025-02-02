@@ -1,13 +1,18 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Frame from "@/components/core/Sidebar";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { open } from "@tauri-apps/plugin-shell";
 import { NeptuneStatus } from "@/components/ui/neptuneStatus";
+import { check } from '@tauri-apps/plugin-updater';
+import { relaunch } from '@tauri-apps/plugin-process';
 
 export default function Home() {
+  const [updateStatus, setUpdateStatus] = useState('checking');
+  const [downloadProgress, setDownloadProgress] = useState(0);
+
   useEffect(() => {
     const setRPC = async () => {
       try {
@@ -31,6 +36,51 @@ export default function Home() {
     }
   }, []);
 
+  useEffect(() => {
+    const checkForUpdates = async () => {
+      try {
+        const update = await check();
+
+        if (update) {
+          setUpdateStatus('downloading');
+          console.log(
+            `found update ${update.version} from ${update.date} with notes ${update.body}`
+          );
+
+          let downloaded = 0;
+          let contentLength = 0;
+
+          await update.downloadAndInstall(async (event) => {
+            switch (event.event) {
+              case 'Started':
+                contentLength = event.data.contentLength ?? 0;
+                console.log(`started downloading ${event.data.contentLength} bytes`);
+                break;
+              case 'Progress':
+                downloaded += event.data.chunkLength;
+                const progress = (downloaded / contentLength) * 100;
+                setDownloadProgress(progress);
+                console.log(`downloaded ${downloaded} from ${contentLength}`);
+                break;
+              case 'Finished':
+                console.log('download finished');
+                setUpdateStatus('restarting');
+                await relaunch();
+                break;
+            }
+          });
+        } else {
+          setUpdateStatus('up-to-date');
+        }
+      } catch (error) {
+        console.error(error);
+        setUpdateStatus('error');
+      }
+    };
+
+    checkForUpdates();
+  }, []);
+
   return (
     <div className="flex h-screen">
       <Frame page={{ page: "Home" }} />
@@ -38,7 +88,7 @@ export default function Home() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
-        className="flex-grow p-4 text-white"
+        className="flex-grow p-4 text-white relative"
       >
         <NeptuneStatus />
         <h1 className="text-2xl font-bold mt-6 ml-1 mb-4">Home</h1>
@@ -131,6 +181,29 @@ export default function Home() {
             </p>
           </div>
         </div>
+
+        <AnimatePresence>
+          {(updateStatus === 'downloading' || updateStatus === 'restarting') && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              className="fixed bottom-4 right-4 bg-[#1F2025] text-white p-4 rounded-lg shadow-lg"
+            >
+              <p className="text-sm font-semibold mb-2">
+                {updateStatus === 'downloading' ? 'Updating Carbon' : 'Restarting'}
+              </p>
+              {updateStatus === 'downloading' && (
+                <div className="w-full bg-gray-700 rounded-full h-2.5">
+                  <div
+                    className="bg-blue-600 h-2.5 rounded-full"
+                    style={{ width: `${downloadProgress}%` }}
+                  ></div>
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.main>
     </div>
   );

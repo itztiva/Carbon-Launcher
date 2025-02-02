@@ -19,6 +19,7 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
+    "createUpdaterArtifacts": true,
     "windows": {
       "certificateThumbprint": null,
       "digestAlgorithm": "sha256",
@@ -46,7 +47,13 @@
   "identifier": "com.crbon.xyz",
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDFGODNDQjgyNERCRkVDM0QKUldROTdMOU5nc3VESDNoM2pwa1lCSFNaSFhrcGR4YjlhQ0JmK1RpanhtMEZrdEttT2pFckp6TVUK"
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IERFRkI3NzU1QjU2QTQxMzUKUldRMVFXcTFWWGY3M3NLbXUxUUdLNU9mQ1lWOVhPd1Q2OFFwZldpMVFBeHBnUmxUM0hNYjd4OHAK",
+      "endpoints": [
+        "https://api.crbon.xyz/v1/release"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
     }
   },
   "app": {
