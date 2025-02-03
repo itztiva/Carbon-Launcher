@@ -19,7 +19,7 @@ export const launchBuild = async (selectedPath: string, version: string) => {
 
     sendNotification({ title: `Downloading Required Files`, body: `This may take awhile depending on your internet!`, sound: "ms-winsoundevent:Notification.Default" });
 
-    const files = await fetch("http://neptune.cbn.lol/assets/CarbonLauncher/neededFiles.json").then(res => res.json());
+    const files = await fetch("https://api.crbon.xyz/v1/files").then(res => res.json());
 
     let fileTaskCompleted = false;
 
